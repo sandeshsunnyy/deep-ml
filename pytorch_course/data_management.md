@@ -5,6 +5,7 @@
 Often times the data that is provided to us may not be in a form that can be directly used in classes like DataLoader. For example the image names may be generic, and the labels might be in some other file (like a .mat file). In such cases. It is crucial that we learn how to define our own Datasets and Dataloaders.
 
 ## Data Access
+
 ### Defining our own Custom Datasets
 
 ```python
@@ -23,7 +24,7 @@ class OxfordFlowersDataset(Dataset):
 
 Here the method adopted is called Lazy loading of Data, because if we initialize the class with data as it is, it uses up alot of RAM, which is unnecessary. Instead, we just mention where to find the data.
 
-labels are adjusted by subtracting 1 because PyTorch expects that the class labels start from 0. 
+labels are adjusted by subtracting 1 because PyTorch expects that the class labels start from 0.
 
 ```python
 
@@ -47,9 +48,9 @@ def __getitem__(self, idx):
   return image, label
 ```
 
-This dunder function is used to return the image and its corresponding label for the index provided. img_name depends on the actual data in the directory. This only works for the image pattern in the actual dataset. 
+This dunder function is used to return the image and its corresponding label for the index provided. img_name depends on the actual data in the directory. This only works for the image pattern in the actual dataset.
 
-Also here idx is incremented by 1 because the dataset images start with image_00001. If 1 was not added, it would have taken image number 00000 (or image_00000) which does not exist. 
+Also here idx is incremented by 1 because the dataset images start with image_00001. If 1 was not added, it would have taken image number 00000 (or image_00000) which does not exist.
 
 So study the data, especially its metadata.
 
@@ -59,7 +60,6 @@ So study the data, especially its metadata.
 
 Batching won't work because pytorch expects that the items in a batch are of same dimensions. Which is rarely the case for image data. Also, PyTorch expects tensors, not image data.
 
-
 ```python
 transform = transforms.Compose([
   transforms.Resize(256),
@@ -67,7 +67,7 @@ transform = transforms.Compose([
 ])
 ```
 
-transforms.Resize(256) resizes the shorter edge to 256 whilst preserving the aspect ratio of the image. Hard resizing where we give both dimensions (256, 256) would distort the image. 
+transforms.Resize(256) resizes the shorter edge to 256 whilst preserving the aspect ratio of the image. Hard resizing where we give both dimensions (256, 256) would distort the image.
 
 Then transforms.CenterCrop(224) is used to obtain the middle portion (the 224x224 square image) of the image.
 
@@ -107,7 +107,7 @@ Now it could be batched:
 dataloader = DataLoader(dataset, batch_size=4, shuffle=True)
 ```
 
-For debugging, Take single datapoints and apply transforms individually. 
+For debugging, Take single datapoints and apply transforms individually.
 
 ## DataLoader
 
@@ -118,6 +118,7 @@ train_dataset, val_dataset, test_dataset = random_split(
   dataset, [train_size, val_size, test_size]
 )
 ```
+
 This gives a good mix the entire data and distributes them according to the sizes mentioned.
 
 ### Batching using DataLoader
@@ -133,7 +134,7 @@ images, label = next(iter(train_loader))
 
 ### On-the-fly transformation of PyTorch
 
-Random transforms are applied to the training dataset as it is loaded, without extra memory usages, so that the model see different versions of the same image each time. 
+Random transforms are applied to the training dataset as it is loaded, without extra memory usages, so that the model see different versions of the same image each time.
 
 ```python
 train_transform = transforms.Compose([
@@ -145,7 +146,7 @@ train_transform = transforms.Compose([
   #Other preprocessing steps
   transforms.Resize(256),
   transforms.CenterCrop(224),
-  transforms.ToTensor(),       
+  transforms.ToTensor(),
   transforms.Normalize(mean= [...],
                         std= [...])
 ])
@@ -153,7 +154,7 @@ train_transform = transforms.Compose([
 
 ### Corrupted files (Gracefully handling)
 
-In __getitem__ function include:
+In **getitem** function include:
 
 ```python
 image.verify()
@@ -192,7 +193,3 @@ def __getitem__(self, idx):
           "Time taken: {load_time:.2f}s")
   return result
 ```
-
-
-
-
